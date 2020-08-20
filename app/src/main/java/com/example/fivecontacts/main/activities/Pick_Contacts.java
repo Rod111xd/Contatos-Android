@@ -10,21 +10,29 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.fivecontacts.R;
+import com.example.fivecontacts.main.model.User;
 
 public class Pick_Contacts extends AppCompatActivity {
 
     TextView tv;
     Button btSalvar;
+    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_contacts);
 
-        //Pegando parâmetros
-        Intent quemChamou = this.getIntent();
+        //Dados da Intent Anterior
+        Intent quemChamou=this.getIntent();
+        if (quemChamou!=null) {
+            Bundle params = quemChamou.getExtras();
+            if (params!=null) {
+                //Recuperando o Usuario
+                user = (User) params.getSerializable("usuario");
+                if (user != null) {
 
-        if (quemChamou != null) {
-
+                }
+            }
         }
 
         btSalvar = findViewById(R.id.btSalvar);
