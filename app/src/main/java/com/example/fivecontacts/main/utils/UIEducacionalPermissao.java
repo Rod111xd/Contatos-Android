@@ -1,4 +1,4 @@
-package com.example.fivecontacts.main.activities;
+package com.example.fivecontacts.main.utils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

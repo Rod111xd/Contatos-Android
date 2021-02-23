@@ -3,7 +3,6 @@ package com.example.fivecontacts.main.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,12 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.example.fivecontacts.R;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.fivecontacts.main.model.User;
 
-public class MudarDadosUsuario extends AppCompatActivity {
+public class NovoUsuario_Activity extends AppCompatActivity {
 
     boolean primeiraVezUser=true;
     boolean primeiraVezSenha=true;
@@ -29,18 +27,15 @@ public class MudarDadosUsuario extends AppCompatActivity {
     EditText edEmail;
     Switch swLogado;
 
-    Button btModificar;
-    BottomNavigationView bnv;
+    Button btCriar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_alterar_usuario);
+        setContentView(R.layout.activity_novo_usuario);
 
-        btModificar=findViewById(R.id.btCriar);
-        bnv=findViewById(R.id.bnv);
-        bnv.setSelectedItemId(R.id.anvPerfil);
-
+        btCriar=findViewById(R.id.btCriar);
         edUser=findViewById(R.id.edT_Login2);
         edPass=findViewById(R.id.edt_Pass2);
         edNome=findViewById(R.id.edtNome);
@@ -83,7 +78,7 @@ public class MudarDadosUsuario extends AppCompatActivity {
 
 
 
-        btModificar.setOnClickListener(new View.OnClickListener() {
+        btCriar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -116,8 +111,17 @@ public class MudarDadosUsuario extends AppCompatActivity {
 
                 escritor.commit(); //Salva em Disco
 
-                Toast.makeText(MudarDadosUsuario.this,"Modificações Salvas",Toast.LENGTH_LONG).show() ;
+                //Salvando o user
 
+                User user =new User(nome,login,senha,email,manterLogado);
+
+                Intent intent=new Intent(NovoUsuario_Activity.this, AlterarContatos_Activity.class);
+                intent.putExtra("usuario",user);
+                startActivity(intent);
+
+                //Mesmo após a chamar de um startActivity o método continuará execuntando
+                //Por exemplo, aqui mataremos a Activity atual porém a Pick_Contacts é aqui será exibida
+                Log.v("PDMv2","passei do StartActivity");
                 finish();
             }
         });
