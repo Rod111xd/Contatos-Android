@@ -98,55 +98,22 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
    // }
 
     public void salvarContato (Contato w){
-          Contato c, k, z;
-          c= new Contato();
-          c.setNumero("tel:+141414141");
-          c.setNome("Peppa");
-        k= new Contato();
-        k.setNumero("tel:+242414141");
-        k.setNome("George");
-
-        z= new Contato();
-        z.setNumero("tel:+342414141");
-        z.setNome("Richard");
-
         SharedPreferences salvaContatos =
-                getSharedPreferences("contatos2",Activity.MODE_PRIVATE);
+                getSharedPreferences("contatos",Activity.MODE_PRIVATE);
+
+        int num = salvaContatos.getInt("numContatos", 0); //checando quantos contatos já tem
 
         SharedPreferences.Editor editor = salvaContatos.edit();
-
-        editor.putInt("numContatos",4);
-
 
         try {
             ByteArrayOutputStream dt = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(dt);
-            oos.writeObject(c);
-            String contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
-            editor.putString("contato1", contatoSerializado);
-
-
-            dt = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(dt);
-            oos.writeObject(k);
-
-            contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
-            editor.putString("contato2", contatoSerializado);
-
-            dt = new ByteArrayOutputStream();
-            oos = new ObjectOutputStream(dt);
-            oos.writeObject(z);
-
-           contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
-            editor.putString("contato3", contatoSerializado);
-
             dt = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(dt);
             oos.writeObject(w);
-            contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
-            editor.putString("contato4", contatoSerializado);
-
-
+            String contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
+            editor.putString("contato"+(num+1), contatoSerializado);
+            editor.putInt("numContatos",num+1);
 
         }catch(Exception e){
             e.printStackTrace();

@@ -20,6 +20,8 @@ import com.example.fivecontacts.main.model.User;
 public class NovoUsuario_Activity extends AppCompatActivity {
 
     boolean primeiraVezUser=true;
+    boolean primeiraVezNome=true;
+    boolean primeiraVezEmail=true;
     boolean primeiraVezSenha=true;
     EditText edUser;
     EditText edPass;
@@ -41,6 +43,7 @@ public class NovoUsuario_Activity extends AppCompatActivity {
         edNome=findViewById(R.id.edtNome);
         edEmail=findViewById(R.id.edEmail);
         swLogado=findViewById(R.id.swLogado);
+
 
 
         //Evento de limpar Componente
@@ -71,10 +74,32 @@ public class NovoUsuario_Activity extends AppCompatActivity {
         });
 
         //Evento de limpar Componente - E-mail
-        //TO-DO
+
+        edEmail.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (primeiraVezEmail){
+                    primeiraVezEmail=false;
+                    edEmail.setText("");
+                }
+
+                return false;
+            }
+        });
 
         //Evento de limpar Componente - Nome
-        //TO-DO
+
+        edNome.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (primeiraVezNome){
+                    primeiraVezNome=false;
+                    edNome.setText("");
+                }
+
+                return false;
+            }
+        });
 
 
 

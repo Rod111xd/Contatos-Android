@@ -4,15 +4,14 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-         <item
+        <item
             android:id="@+id/anvLigar"
             android:checked="true"
             android:icon="@drawable/ic_action_ligar"
-            android:title="Ligar"
-            />
+            android:title="Ligar" />
         <item
             android:id="@+id/anvMudar"
-            android:icon="@drawable/ic_action_mudarcontatos"
+            android:icon="@drawable/ic_action_mudar"
             android:title="Mudar Contatos" />
         <item
             android:id="@+id/anvPerfil"

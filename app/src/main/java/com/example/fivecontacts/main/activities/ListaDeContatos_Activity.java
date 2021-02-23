@@ -72,24 +72,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     }
 
     protected void preencherListaDeContatos() {
-        //Vamos montar o ListView
-      /*  Contato c1, c2;
-        c1=new Contato();
-        c1.setNome("Neymar pai ta off");
-        c1.setNumero("tel:88888888");
 
-        c2=new Contato();
-        c2.setNome("Messi");
-        c2.setNumero("tel:777777777");
-
-
-        final ArrayList<Contato> contatos;
-        contatos = new ArrayList<Contato>();
-        contatos.add(c1);
-        contatos.add(c2);
-
-*/
-        SharedPreferences recuperarContatos = getSharedPreferences("contatos2", Activity.MODE_PRIVATE);
+        SharedPreferences recuperarContatos = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
 
         int num = recuperarContatos.getInt("numContatos", 0);
         final ArrayList<Contato> contatos = new ArrayList<Contato>();
@@ -143,8 +127,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                     if (checarPermissaoPhone_SMD()) {
 
                         Uri uri = Uri.parse(contatos.get(i).getNumero());
-                         Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
-                       // Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
+                      //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                        Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                         startActivity(itLigar);
                     }
 
