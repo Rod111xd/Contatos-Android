@@ -68,8 +68,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
                     setTitle("Contatos de Emergência de "+user.getNome());
-                    //preencherListView(user); //Montagem do ListView
-                    preencherListViewImagens(user);
+                    preencherListView(user); //Montagem do ListView
+                    //preencherListViewImagens(user);
                 }
             }
         }
@@ -110,6 +110,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         user.setContatos(contatos);
     }
     protected  void preencherListViewImagens(User user){
+
         final ArrayList<Contato> contatos = user.getContatos();
         Collections.sort(contatos);
         if (contatos != null) {
@@ -310,8 +311,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             user=atualizarUser();
             setTitle("Contatos de Emergência de "+user.getNome());
             atualizarListaDeContatos(user);
-            preencherListViewImagens(user);
-
+           // preencherListViewImagens(user);
+            preencherListView(user); //Montagem do ListView
         }
 
         if (requestCode == 1112) {//Retorno de Mudar Contatos
@@ -319,7 +320,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
           //  user=atualizarUser();
 
             atualizarListaDeContatos(user);
-            preencherListViewImagens(user);
+            //preencherListViewImagens(user);
+            preencherListView(user); //Montagem do ListView
         }
 
 
