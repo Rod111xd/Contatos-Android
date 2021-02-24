@@ -32,17 +32,15 @@ import java.nio.charset.StandardCharsets;
 
 public class AlterarContatos_Activity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-
     EditText edtNome;
     ListView lv;
-  //  Button btSalvar;
-  BottomNavigationView bnv;
+    BottomNavigationView bnv;
     User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alterar_contatos);
-       // tv =findViewById(R.id.MessageIntent);
         edtNome = findViewById(R.id.edtBusca);
         bnv = findViewById(R.id.bnv);
         bnv.setOnNavigationItemSelectedListener(this);
@@ -56,54 +54,17 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
                 setTitle("Contatos de Emergência de "+user.getNome());
-
             }
         }
-
         lv = findViewById(R.id.listContatosDoCell);
-
-
-        /*
-        btSalvar = findViewById(R.id.btSalvar);
-
-        btSalvar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-
-
-
-
-                //Evento do Botão Salvar Vamos Salvar Contatos e Telefones em SharedPreferences"
-
-              //  mostrarListaDeContatos();
-
-              //salvarContatosSerializados();
-
-
-
-
-
-            }
-        });
-*/
     }
-
-   // private void preencherListaDeContatos() {
-
-
-
-   // }
 
     public void salvarContato (Contato w){
         SharedPreferences salvaContatos =
                 getSharedPreferences("contatos",Activity.MODE_PRIVATE);
 
         int num = salvaContatos.getInt("numContatos", 0); //checando quantos contatos já tem
-
         SharedPreferences.Editor editor = salvaContatos.edit();
-
         try {
             ByteArrayOutputStream dt = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(dt);
@@ -113,18 +74,11 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
             String contatoSerializado= dt.toString(StandardCharsets.ISO_8859_1.name());
             editor.putString("contato"+(num+1), contatoSerializado);
             editor.putInt("numContatos",num+1);
-
         }catch(Exception e){
             e.printStackTrace();
         }
-
         editor.commit();
         user.getContatos().add(w);
-
-
-
-
-
     }
 
 
@@ -142,9 +96,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
 
 
     public void onClickBuscar(View v){
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-
             Log.v("PDM", "Pedir permissão");
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 3333);
             return;
@@ -152,19 +104,14 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         Log.v("PDM", "Tenho permissão");
 
         ContentResolver cr = getContentResolver();
-
         String consulta = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
-
         String [] argumentosConsulta= {"%"+edtNome.getText()+"%"};
-
         Cursor cursor= cr.query(ContactsContract.Contacts.CONTENT_URI, null,
                 consulta,argumentosConsulta, null);
-
-
         final String[] nomesContatos = new String[cursor.getCount()];
         final String[] telefonesContatos = new String[cursor.getCount()];
         Log.v("PDM","Tamanho do cursor:"+cursor.getCount());
-         //final Contato c = new Contato();
+
         int i=0;
         while (cursor.moveToNext()) {
             int indiceNome = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
@@ -187,9 +134,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         if (nomesContatos !=null) {
             for(int j=0; j<=nomesContatos.length; j++) {
                 ArrayAdapter<String> adaptador;
-
                 adaptador = new ArrayAdapter<String>(this, R.layout.list_view_layout, nomesContatos);
-
                 lv.setAdapter(adaptador);
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -199,7 +144,6 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                         c.setNome(nomesContatos[i]);
                         c.setNumero("tel:+"+telefonesContatos[i]);
                         salvarContato(c);
-
                         Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
                         intent.putExtra("usuario", user);
                         startActivity(intent);
@@ -209,90 +153,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 });
             }
         }
-
-
-
-
-
-
     }
-
-
-
-    protected int mostrarListaDeContatos() {
-
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-
-            Log.v("PDM", "Pedir permissão");
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 3333);
-            return 0;
-        }
-        ;
-
-        Log.v("PDM", "Tenho permissão");
-
-        //Projection, os campos que você quer
-        String[] projection = new String[]
-                {
-                        ContactsContract.Profile._ID,
-                        ContactsContract.Profile.DISPLAY_NAME_PRIMARY,
-                        ContactsContract.Profile.LOOKUP_KEY,
-                        ContactsContract.Profile.PHOTO_THUMBNAIL_URI
-                };
-
-        String selection = ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
-        String[] selectionArguments= {"K%"};
-
-        ContentResolver cr = getContentResolver();
-      //  Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null,null, null, null);
-        Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,projection,selection,selectionArguments, null);
-
-        int indexDisplayName = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
-
-        while (cursor.moveToNext()) {
-            //   String given = cursor.getString(indexGivenName);
-            //  String family = cursor.getString(indexFamilyName);
-            String display = cursor.getString(indexDisplayName);
-            //Ler nome
-            String contatoNome = cursor.getString(indexDisplayName);
-            Log.v("PDM", "Nome do Contato:" + contatoNome);//+","+given+","+"family");
-            String contactId =
-                    cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-            //
-            //  Get all phone numbers.
-            //
-
-
-            Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
-            while (phones.moveToNext()) {
-                String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                int type = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
-                switch (type) {
-                    case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
-                        // do something with the Home number here...
-                        Log.v("PDM", "Tel do (" + contactId + "): " + contatoNome + ": " + number);
-                        break;
-                    case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                        // do something with the Mobile number here...
-                        Log.v("PDM", "Tel do (" + contactId + "): " + contatoNome + ": " + number);
-                        break;
-                    case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
-                        // do something with the Work number here...
-                        Log.v("PDM", "Tel do (" + contactId + "): " + contatoNome + ": " + number);
-
-                        break;
-                }
-            }
-            phones.close();
-        }
-
-
-        cursor.close();
-        return 1;
-    }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

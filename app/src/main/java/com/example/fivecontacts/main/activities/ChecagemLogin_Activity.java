@@ -51,11 +51,7 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
             startActivity(intent);
             finish();
 
-
-
         }else { //Checar Usuário e Senha ou clicar em criar novo
-
-
             btLogar = findViewById(R.id.btLogar);
             btNovo = findViewById(R.id.btNovo);
             edUser = findViewById(R.id.edT_Login);

@@ -220,36 +220,18 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 mensagemPermissao.onAttach ((Context)this);
                 mensagemPermissao.show(getSupportFragmentManager(), "primeiravez2");
 
-
-
-
             }else{
-
-
                 String mensagem = "Nossa aplicação precisa acessar o telefone para discagem automática. Uma janela de permissão será solicitada";
                 String titulo = "Permissão de acesso a chamadas II";
                 int codigo =1;
 
                 UIEducacionalPermissao mensagemPermissao = new UIEducacionalPermissao(mensagem,titulo, codigo);
-
                 mensagemPermissao.onAttach ((Context)this);
                 mensagemPermissao.show(getSupportFragmentManager(), "segundavez2");
-
-
                 Log.v ("SMD","Outra Vez");
 
             }
-
-
       }
-
-
-
-
-
-
-
-
         return false;
     }
 
@@ -259,16 +241,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                                             int[] grantResults) {
         switch (requestCode) {
             case 2222:
-               // Toast.makeText(this, "VOLTOU DA JANELA DE PERMISSÃO", Toast.LENGTH_LONG).show();
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
-
-
-
-
-
-
-
                }else{
                    Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
 
@@ -317,8 +291,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
         if (requestCode == 1112) {//Retorno de Mudar Contatos
             bnv.setSelectedItemId(R.id.anvLigar);
-          //  user=atualizarUser();
-
             atualizarListaDeContatos(user);
             //preencherListViewImagens(user);
             preencherListView(user); //Montagem do ListView
