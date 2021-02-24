@@ -43,7 +43,7 @@ public class NovoUsuario_Activity extends AppCompatActivity {
         edNome=findViewById(R.id.edtNome);
         edEmail=findViewById(R.id.edEmail);
         swLogado=findViewById(R.id.swLogado);
-
+        setTitle("Novo Usuário");
 
 
         //Evento de limpar Componente

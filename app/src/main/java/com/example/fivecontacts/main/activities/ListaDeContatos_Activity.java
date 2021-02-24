@@ -68,8 +68,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
                     setTitle("Contatos de Emergência de "+user.getNome());
-                    preencherListView(user); //Montagem do ListView
-                    //preencherListViewImagens(user);
+                  //  preencherListView(user); //Montagem do ListView
+                    preencherListViewImagens(user);
                 }
             }
         }

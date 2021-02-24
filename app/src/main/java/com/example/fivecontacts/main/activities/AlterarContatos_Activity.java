@@ -55,7 +55,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
             if (params!=null) {
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
-                setTitle("Contatos de Emergência de "+user.getNome());
+                setTitle("Alterar Contatos de Emergência");
             }
         }
         lv = findViewById(R.id.listContatosDoCell);

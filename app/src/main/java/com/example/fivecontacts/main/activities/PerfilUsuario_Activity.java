@@ -54,7 +54,7 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
             if (params != null) {
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
-                setTitle("Contatos de Emergência de "+user.getNome());
+                setTitle("Alterar dados de "+user.getNome());
 
             }
         }
