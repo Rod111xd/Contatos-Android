@@ -9,7 +9,6 @@ public class User implements Serializable {
     String login;
     String senha;
     String email;
-
     boolean manterLogado=false;
     ArrayList<Contato> contatos;
 

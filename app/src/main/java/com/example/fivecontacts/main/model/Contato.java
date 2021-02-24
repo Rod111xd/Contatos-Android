@@ -2,7 +2,7 @@ package com.example.fivecontacts.main.model;
 
 import java.io.Serializable;
 
-public class Contato implements Serializable {
+public class Contato implements Serializable, Comparable {
     public String getNome() {
         return nome;
     }
@@ -22,4 +22,9 @@ public class Contato implements Serializable {
     String nome;
     String numero;
 
+    @Override
+    public int compareTo(Object o) {
+        Contato c2= (Contato)o;
+        return this.getNome().compareTo(c2.getNome());
+    }
 }

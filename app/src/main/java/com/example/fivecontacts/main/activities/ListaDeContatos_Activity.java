@@ -17,9 +17,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fivecontacts.R;
@@ -34,6 +38,9 @@ import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ListaDeContatos_Activity extends AppCompatActivity implements UIEducacionalPermissao.NoticeDialogListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -50,10 +57,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         bnv.setOnNavigationItemSelectedListener(this);
         bnv.setSelectedItemId(R.id.anvLigar);
 
-
         lv = findViewById(R.id.listView1);
-        preencherListaDeContatos(); //Montagem do ListView
-
 
         //Dados da Intent Anterior
         Intent quemChamou = this.getIntent();
@@ -63,20 +67,20 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
-
                     setTitle("Contatos de Emergência de "+user.getNome());
+                    //preencherListView(user); //Montagem do ListView
+                    preencherListViewImagens(user);
                 }
             }
         }
 
     }
 
-    protected void preencherListaDeContatos() {
-
+    protected void atualizarListaDeContatos(User user){
         SharedPreferences recuperarContatos = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
 
         int num = recuperarContatos.getInt("numContatos", 0);
-        final ArrayList<Contato> contatos = new ArrayList<Contato>();
+        ArrayList<Contato> contatos = new ArrayList<Contato>();
 
         Contato contato;
 
@@ -102,14 +106,67 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
 
         }
+        Log.v("PDM3","contatos:"+contatos.size());
+        user.setContatos(contatos);
+    }
+    protected  void preencherListViewImagens(User user){
+        final ArrayList<Contato> contatos = user.getContatos();
+        Collections.sort(contatos);
+        if (contatos != null) {
+            String[] contatosNomes, contatosAbrevs;
+            contatosNomes = new String[contatos.size()];
+            contatosAbrevs= new String[contatos.size()];
+            Contato c;
+            for (int j = 0; j < contatos.size(); j++) {
+                contatosAbrevs[j] =contatos.get(j).getNome().substring(0, 1);
+                contatosNomes[j] =contatos.get(j).getNome();
+            }
+            ArrayList<Map<String,Object>> itemDataList = new ArrayList<Map<String,Object>>();;
 
+            for(int i =0; i < contatos.size(); i++) {
+                Map<String,Object> listItemMap = new HashMap<String,Object>();
+                listItemMap.put("imageId", R.drawable.ic_action_ligar_list);
+                listItemMap.put("contato", contatosNomes[i]);
+                listItemMap.put("abrevs",contatosAbrevs[i]);
+                itemDataList.add(listItemMap);
+            }
+            SimpleAdapter simpleAdapter = new SimpleAdapter(this,itemDataList,R.layout.list_view_layout_imagem,
+                    new String[]{"imageId","contato","abrevs"},new int[]{R.id.userImage, R.id.userTitle,R.id.userAbrev});
+
+            lv.setAdapter(simpleAdapter);
+
+
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    if (checarPermissaoPhone_SMD()) {
+
+                        Uri uri = Uri.parse(contatos.get(i).getNumero());
+                        //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                        Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
+                        startActivity(itLigar);
+                    }
+
+
+                }
+            });
+
+        }
+
+
+    }
+    protected void preencherListView(User user) {
+
+        final ArrayList<Contato> contatos = user.getContatos();
 
         if (contatos != null) {
-            final String[] nomesSP, telsSP;
+            final String[] nomesSP;
             nomesSP = new String[contatos.size()];
             Contato c;
-            for (int i = 0; i < contatos.size(); i++) {
-                nomesSP[i] = contatos.get(i).getNome();
+            for (int j = 0; j < contatos.size(); j++) {
+                nomesSP[j] = contatos.get(j).getNome();
             }
 
             ArrayAdapter<String> adaptador;
@@ -250,50 +307,36 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
         if (requestCode == 1111) {//Retorno de Mudar Perfil
             bnv.setSelectedItemId(R.id.anvLigar);
+            user=atualizarUser();
+            setTitle("Contatos de Emergência de "+user.getNome());
+            atualizarListaDeContatos(user);
+            preencherListViewImagens(user);
+
         }
 
         if (requestCode == 1112) {//Retorno de Mudar Contatos
             bnv.setSelectedItemId(R.id.anvLigar);
-            preencherListaDeContatos();
+          //  user=atualizarUser();
+
+            atualizarListaDeContatos(user);
+            preencherListViewImagens(user);
         }
 
 
 
     }
 
-    protected ArrayList<Contato> montarListaDeContatosPorSerializacaoJava() {
-        SharedPreferences salvaContatos = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
-        int num = salvaContatos.getInt("numContatos", 0);
+    private User atualizarUser() {
+        User user = null;
+        SharedPreferences temUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);
+        String loginSalvo = temUser.getString("login","");
+        String senhaSalva = temUser.getString("senha","");
+        String nomeSalvo = temUser.getString("nome","");
+        String emailSalvo = temUser.getString("email","");
+        boolean manterLogado=temUser.getBoolean("manterLogado",false);
 
-        ArrayList<Contato> contatos = new ArrayList<Contato>();
-
-        Contato c;
-        for (int i = 1; i <= num; i++) {
-            String objSel = salvaContatos.getString("contato" + i, "");
-            if (objSel.compareTo("") != 0) {
-                try {
-                    ByteArrayInputStream dis = new ByteArrayInputStream(objSel.getBytes(StandardCharsets.ISO_8859_1.name()));
-                    ObjectInputStream oos = new ObjectInputStream(dis);
-                    c = (Contato) oos.readObject();
-                    if (c != null) {
-                        contatos.add(c);
-                        //  Log.v("PDM",c.getNome());
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-
-        }
-
-
-        return contatos;
+        user=new User(nomeSalvo,loginSalvo,senhaSalva,emailSalvo,manterLogado);
+        return user;
     }
 
     @Override
@@ -304,21 +347,11 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
           requestPermissions(permissions, 2222);
 
         }
-        //Log.v ("SMD","Clicou no OK");
 
 
     }
 
 
-    // @Override
-  //  public void onDialogPositiveClick( int codigo) {
-
-  //      if (codigo==1) { // Primeira Vez
-  //          String[] permissoes = {Manifest.permission.CALL_PHONE};
-  //          requestPermissions(permissoes, 1212);
-  //      }
-   //     if (codigo==2) { // Não deu permissão :(
-//
-   //     }
-  //  }
 }
+
+

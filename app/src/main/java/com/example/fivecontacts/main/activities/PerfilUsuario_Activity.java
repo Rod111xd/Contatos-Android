@@ -22,8 +22,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class PerfilUsuario_Activity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    boolean primeiraVezUser=true;
-    boolean primeiraVezSenha=true;
     EditText edUser;
     EditText edPass;
     EditText edNome;
@@ -50,7 +48,16 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
         edEmail=findViewById(R.id.edEmail);
         swLogado=findViewById(R.id.swLogado);
 
-        user = montarObjetoUser();
+        Intent quemChamou = this.getIntent();
+        if (quemChamou != null) {
+            Bundle params = quemChamou.getExtras();
+            if (params != null) {
+                //Recuperando o Usuario
+                user = (User) params.getSerializable("usuario");
+                setTitle("Contatos de Emergência de "+user.getNome());
+
+            }
+        }
         if (user != null) {
                    edUser.setText(user.getLogin());
                     edPass.setText(user.getSenha());
@@ -59,71 +66,19 @@ public class PerfilUsuario_Activity extends AppCompatActivity implements BottomN
                     swLogado.setChecked(user.isManterLogado());
         }
 
-
-        //Evento de limpar Componente
-        edUser.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (primeiraVezUser){
-                    primeiraVezUser=false;
-                    edUser.setText("");
-                }
-
-                return false;
-            }
-        });
-        //Evento de limpar Componente
-
-        edPass.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (primeiraVezSenha){
-                    primeiraVezSenha=false;
-                    edPass.setText("");
-                    edPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    );
-                }
-                return false;
-            }
-        });
-
-        //Evento de limpar Componente - E-mail
-        //TO-DO
-
-        //Evento de limpar Componente - Nome
-        //TO-DO
-
-
-
         btModificar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 user.setNome(edNome.getText().toString());
                 user.setLogin(edUser.getText().toString());
                 user.setSenha(edPass.getText().toString());
                 user.setEmail(edEmail.getText().toString());
                 user.setManterLogado(swLogado.isChecked());
-
                 salvarModificacoes(user);
-
             }
         });
     }
 
-    private User montarObjetoUser() {
-        User user = null;
-        SharedPreferences temUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);
-        String loginSalvo = temUser.getString("login","");
-        String senhaSalva = temUser.getString("senha","");
-        String nomeSalvo = temUser.getString("nome","");
-        String emailSalvo = temUser.getString("email","");
-        boolean manterLogado=temUser.getBoolean("manterLogado",false);
-
-        user=new User(nomeSalvo,loginSalvo,senhaSalva,emailSalvo,manterLogado);
-        return user;
-    }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Checagem de o Item selecionado é a de mudanças de contatos

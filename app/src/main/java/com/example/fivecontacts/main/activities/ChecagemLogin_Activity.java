@@ -6,17 +6,26 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fivecontacts.R;
+import com.example.fivecontacts.main.model.Contato;
 import com.example.fivecontacts.main.model.User;
+
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class ChecagemLogin_Activity extends AppCompatActivity {
 
@@ -35,11 +44,15 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
         //Existe um usuário padrão logado?
         if(montarObjetoUserSemLogar()){
             User user = montarObjetoUser();
+            preencherListaDeContatos(user);
             //Abrir a atividade de Lista de Contatos
             Intent intent = new Intent(ChecagemLogin_Activity.this, ListaDeContatos_Activity.class);
             intent.putExtra("usuario",user);
             startActivity(intent);
             finish();
+
+
+
         }else { //Checar Usuário e Senha ou clicar em criar novo
 
 
@@ -102,6 +115,7 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
                                 && (senhaSalva.compareTo(senha) == 0)) {
 
                             User user = montarObjetoUser();
+                            preencherListaDeContatos(user);
                             //Abrindo a Lista de Contatos
                             Intent intent = new Intent(ChecagemLogin_Activity.this, ListaDeContatos_Activity.class);
                             intent.putExtra("usuario", user);
@@ -150,6 +164,40 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
         SharedPreferences temUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);
         boolean manterLogado = temUser.getBoolean("manterLogado",false);
         return manterLogado;
+    }
+
+    protected void preencherListaDeContatos(User user) {
+
+        SharedPreferences recuperarContatos = getSharedPreferences("contatos", Activity.MODE_PRIVATE);
+
+        int num = recuperarContatos.getInt("numContatos", 0);
+        ArrayList<Contato> contatos = new ArrayList<Contato>();
+
+        Contato contato;
+
+
+        for (int i = 1; i <= num; i++) {
+            String objSel = recuperarContatos.getString("contato" + i, "");
+            if (objSel.compareTo("") != 0) {
+                try {
+                    ByteArrayInputStream bis =
+                            new ByteArrayInputStream(objSel.getBytes(StandardCharsets.ISO_8859_1.name()));
+                    ObjectInputStream oos = new ObjectInputStream(bis);
+                    contato = (Contato) oos.readObject();
+
+                    if (contato != null) {
+                        contatos.add(contato);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+        }
+        user.setContatos(contatos);
     }
 
 }

@@ -55,9 +55,8 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
             if (params!=null) {
                 //Recuperando o Usuario
                 user = (User) params.getSerializable("usuario");
-               // if (user != null) {
-                 //   tv.setText(user.getNome());
-                //}
+                setTitle("Contatos de Emergência de "+user.getNome());
+
             }
         }
 
@@ -120,8 +119,8 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         }
 
         editor.commit();
+        user.getContatos().add(w);
 
-     finish();
 
 
 
@@ -162,99 +161,61 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 consulta,argumentosConsulta, null);
 
 
-        String[] nomesSP = new String[cursor.getCount()];
+        final String[] nomesContatos = new String[cursor.getCount()];
+        final String[] telefonesContatos = new String[cursor.getCount()];
         Log.v("PDM","Tamanho do cursor:"+cursor.getCount());
-         final Contato c = new Contato();
-        int i=0; int y=0;
+         //final Contato c = new Contato();
+        int i=0;
         while (cursor.moveToNext()) {
-            i++;
-
             int indiceNome = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
             String contatoNome = cursor.getString(indiceNome);
             Log.v("PDM", "Contato " + i + ", Nome:" + contatoNome);
-
-            c.setNome(contatoNome);
-            nomesSP[y]=contatoNome;
-            Log.v("PDM", "Contato " + y + ", Nome:+"+nomesSP[y]);
-            y++;
+            nomesContatos[i]= contatoNome;
             int indiceContatoID = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
             String contactID = cursor.getString(indiceContatoID);
-
             String consultaPhone = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactID;
-
             Cursor phones = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     null, consultaPhone, null, null);
 
-            int j = 0;
             while (phones.moveToNext()) {
-                j++;
-
                 String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-                c.setNumero("tel:+"+number);
-                Log.v("PDM", " Telefone (" + j + " " + number);
-
-
+                telefonesContatos[i]=number; //Salvando só último telefone
             }
-
-
-
+            i++;
         }
 
-        if (nomesSP !=null) {
-            if(nomesSP.length>=1) {
-                Log.v("pdm","Nome:"+nomesSP[0]);
+        if (nomesContatos !=null) {
+            for(int j=0; j<=nomesContatos.length; j++) {
                 ArrayAdapter<String> adaptador;
 
-                adaptador = new ArrayAdapter<String>(this, R.layout.list_view_layout, nomesSP);
+                adaptador = new ArrayAdapter<String>(this, R.layout.list_view_layout, nomesContatos);
 
                 lv.setAdapter(adaptador);
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        Contato c= new Contato();
+                        c.setNome(nomesContatos[i]);
+                        c.setNumero("tel:+"+telefonesContatos[i]);
                         salvarContato(c);
-                        Intent intent = new Intent(getBaseContext(), ListaDeContatos_Activity.class);
+
+                        Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
                         intent.putExtra("usuario", user);
                         startActivity(intent);
+                        finish();
 
                     }
                 });
             }
         }
 
-         /*   SharedPreferences salvaContatos =
-                    getSharedPreferences("contatos2",Activity.MODE_PRIVATE);
 
-            SharedPreferences.Editor editor = salvaContatos.edit();
-
-            editor.putInt("numContatos",4);
-
-
-            try {
-                ByteArrayOutputStream dt = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(dt);
-                oos.writeObject(c);
-                String contatoSerializado = dt.toString(StandardCharsets.ISO_8859_1.name());
-                editor.putString("contato4", contatoSerializado);
-
-                editor.commit();
-
-            }catch (Exception e){
-
-
-
-
-            }
-
-*/
 
 
 
 
     }
-
-
 
 
 
