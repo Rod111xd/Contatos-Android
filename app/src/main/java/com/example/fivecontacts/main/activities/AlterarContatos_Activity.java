@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 
 public class AlterarContatos_Activity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+    Boolean primeiraVezUser=true;
     EditText edtNome;
     ListView lv;
     BottomNavigationView bnv;
@@ -57,6 +59,18 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
             }
         }
         lv = findViewById(R.id.listContatosDoCell);
+        //Evento de limpar Componente
+        edtNome.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (primeiraVezUser){
+                    primeiraVezUser=false;
+                    edtNome.setText("");
+                }
+
+                return false;
+            }
+        });
     }
 
     public void salvarContato (Contato w){
