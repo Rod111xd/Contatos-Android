@@ -3,6 +3,7 @@ package com.example.fivecontacts.main.activities;
 import androidx.annotation.NonNull;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -12,8 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +51,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     BottomNavigationView bnv;
     User user;
 
+    String numeroCall;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +74,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                     setTitle("Contatos de Emergência de "+user.getNome());
                   //  preencherListView(user); //Montagem do ListView
                     preencherListViewImagens(user);
+                  //  if (user.isTema_escuro()){
+                    //    ((ConstraintLayout) (lv.getParent())).setBackgroundColor(Color.BLACK);
+                    //}
                 }
             }
         }
@@ -142,11 +149,12 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    if (checarPermissaoPhone_SMD()) {
+
+                    if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
 
                         Uri uri = Uri.parse(contatos.get(i).getNumero());
-                        //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
-                        Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
+                         //  Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                            Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                         startActivity(itLigar);
                     }
 
@@ -182,7 +190,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                    if (checarPermissaoPhone_SMD()) {
+                    if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
 
                         Uri uri = Uri.parse(contatos.get(i).getNumero());
                       //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
@@ -196,8 +204,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         }//fim do IF do tamanho de contatos
     }
 
-    protected boolean checarPermissaoPhone_SMD(){
+    protected boolean checarPermissaoPhone_SMD(String numero){
 
+        numeroCall=numero;
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
       == PackageManager.PERMISSION_GRANTED){
 
@@ -243,6 +252,11 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
+                   Uri uri = Uri.parse(numeroCall);
+                   //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                   Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
+                   startActivity(itLigar);
+
                }else{
                    Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
 

@@ -41,15 +41,33 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checagem_login);
 
+      /*  User userPDM= new User();
+        userPDM.setNome("Einstein");
+      // userPDM.setTema_escuro(true);
+        Contato c= new Contato();
+        c.setNome("Newton");
+        c.setNumero("tel:+888888");
+        userPDM.getContatos().add(c);
+
+        Intent intentPDM= new Intent(this, ListaDeContatos_Activity.class);
+        intentPDM.putExtra("usuarioPDM",userPDM);
+        startActivity(intentPDM);
+
+*/
+
         //Existe um usuário padrão logado?
         if(montarObjetoUserSemLogar()){
             User user = montarObjetoUser();
+
             preencherListaDeContatos(user);
+
             //Abrir a atividade de Lista de Contatos
             Intent intent = new Intent(ChecagemLogin_Activity.this, ListaDeContatos_Activity.class);
             intent.putExtra("usuario",user);
             startActivity(intent);
             finish();
+
+
 
         }else { //Checar Usuário e Senha ou clicar em criar novo
             btLogar = findViewById(R.id.btLogar);
@@ -141,6 +159,8 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
             });
 
         }
+
+
    }
 
     private User montarObjetoUser() {
@@ -151,10 +171,13 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
         String nomeSalvo = temUser.getString("nome","");
         String emailSalvo = temUser.getString("email","");
         boolean manterLogado=temUser.getBoolean("manterLogado",false);
+        boolean temaEscuro=temUser.getBoolean("tema",false);
 
         user=new User(nomeSalvo,loginSalvo,senhaSalva,emailSalvo,manterLogado);
+        user.setTema_escuro(temaEscuro);
         return user;
     }
+
 
     private boolean montarObjetoUserSemLogar() {
         SharedPreferences temUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);

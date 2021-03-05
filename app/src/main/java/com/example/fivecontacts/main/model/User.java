@@ -10,7 +10,19 @@ public class User implements Serializable {
     String senha;
     String email;
     boolean manterLogado=false;
+    boolean tema_escuro=false;
     ArrayList<Contato> contatos;
+
+
+    public boolean isTema_escuro() {
+        return tema_escuro;
+    }
+
+    public void setTema_escuro(boolean tema_escuro) {
+        this.tema_escuro = tema_escuro;
+    }
+
+
 
     public User(String nome, String login, String password, String email, boolean manterLogado) {
         this.nome = nome;

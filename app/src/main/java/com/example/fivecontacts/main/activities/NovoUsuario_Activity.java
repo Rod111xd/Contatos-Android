@@ -29,6 +29,7 @@ public class NovoUsuario_Activity extends AppCompatActivity {
     EditText edEmail;
     Switch swLogado;
 
+    Switch swTema;
     Button btCriar;
 
 
@@ -43,6 +44,9 @@ public class NovoUsuario_Activity extends AppCompatActivity {
         edNome=findViewById(R.id.edtNome);
         edEmail=findViewById(R.id.edEmail);
         swLogado=findViewById(R.id.swLogado);
+
+        swTema= findViewById(R.id.swTema);
+
         setTitle("Novo Usuário");
 
 
@@ -119,6 +123,7 @@ public class NovoUsuario_Activity extends AppCompatActivity {
                 boolean manterLogado;
                 manterLogado= swLogado.isChecked();
 
+                boolean temaEscuro=swTema.isChecked();
 
                 SharedPreferences salvaUser= getSharedPreferences("usuarioPadrao", Activity.MODE_PRIVATE);
                 SharedPreferences.Editor escritor= salvaUser.edit();
@@ -128,11 +133,11 @@ public class NovoUsuario_Activity extends AppCompatActivity {
                 escritor.putString("login",login);
 
                 //Escrever no SharedPreferences
+                //Falta Salvar o E-mail
                 escritor.putString("email",email);
                 escritor.putBoolean("manterLogado",manterLogado);
 
-
-                //Falta Salvar o E-mail
+                escritor.putBoolean("tema",temaEscuro);
 
                 escritor.commit(); //Salva em Disco
 
@@ -140,13 +145,13 @@ public class NovoUsuario_Activity extends AppCompatActivity {
 
                 User user =new User(nome,login,senha,email,manterLogado);
 
+
                 Intent intent=new Intent(NovoUsuario_Activity.this, AlterarContatos_Activity.class);
                 intent.putExtra("usuario",user);
                 startActivity(intent);
 
                 //Mesmo após a chamar de um startActivity o método continuará execuntando
-                //Por exemplo, aqui mataremos a Activity atual porém a Pick_Contacts é aqui será exibida
-                Log.v("PDMv2","passei do StartActivity");
+                //Por exemplo, aqui mataremos a Activity atual porém AlterarContatos será exibida
                 finish();
             }
         });
