@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -36,8 +37,10 @@ import com.example.fivecontacts.main.utils.UIEducacionalPermissao;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -52,6 +55,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
     User user;
 
     String numeroCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,11 +76,8 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 user = (User) params.getSerializable("usuario");
                 if (user != null) {
                     setTitle("Contatos de Emergência de "+user.getNome());
-                  //  preencherListView(user); //Montagem do ListView
+                    //preencherListView(user); //Montagem do ListView
                     preencherListViewImagens(user);
-                  //  if (user.isTema_escuro()){
-                    //    ((ConstraintLayout) (lv.getParent())).setBackgroundColor(Color.BLACK);
-                    //}
                 }
             }
         }
@@ -116,7 +117,32 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         Log.v("PDM3","contatos:"+contatos.size());
         user.setContatos(contatos);
     }
+
+    protected ArrayList<Contato> removerContato(ArrayList<Contato> contatos, int pos) {
+        contatos.remove(pos);
+
+        SharedPreferences salvaContatos =
+                getSharedPreferences("contatos",Activity.MODE_PRIVATE);
+
+        int num = salvaContatos.getInt("numContatos", 0); //checando quantos contatos já tem
+        SharedPreferences.Editor editor = salvaContatos.edit();
+        try {
+            editor.remove("contato"+pos);
+            if(num > 0) {
+                editor.putInt("numContatos", num - 1);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        editor.commit();
+
+        return contatos;
+
+    }
+
     protected  void preencherListViewImagens(User user){
+
+        final User usr = user;
 
         final ArrayList<Contato> contatos = user.getContatos();
         Collections.sort(contatos);
@@ -126,20 +152,48 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             contatosAbrevs= new String[contatos.size()];
             Contato c;
             for (int j = 0; j < contatos.size(); j++) {
-                contatosAbrevs[j] =contatos.get(j).getNome().substring(0, 1);
+                contatosAbrevs[j] =contatos.get(j).getNome().substring(0, 2);
                 contatosNomes[j] =contatos.get(j).getNome();
             }
             ArrayList<Map<String,Object>> itemDataList = new ArrayList<Map<String,Object>>();;
 
             for(int i =0; i < contatos.size(); i++) {
                 Map<String,Object> listItemMap = new HashMap<String,Object>();
-                listItemMap.put("imageId", R.drawable.ic_action_ligar_list);
                 listItemMap.put("contato", contatosNomes[i]);
                 listItemMap.put("abrevs",contatosAbrevs[i]);
+                listItemMap.put("imageId", R.drawable.trash);
                 itemDataList.add(listItemMap);
             }
             SimpleAdapter simpleAdapter = new SimpleAdapter(this,itemDataList,R.layout.list_view_layout_imagem,
-                    new String[]{"imageId","contato","abrevs"},new int[]{R.id.userImage, R.id.userTitle,R.id.userAbrev});
+                    new String[]{"contato","abrevs","imageId"},new int[]{R.id.userTitle,R.id.userAbrev, R.id.userImage})
+            {
+                @Override
+                public View getView (int position, View convertView, ViewGroup parent)
+                {
+                    View v = super.getView(position, convertView, parent);
+
+                    final int pos = position;
+
+                    final ImageView b=(ImageView)v.findViewById(R.id.userImage);
+                    b.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View arg0) {
+                            // Listener para excluir contato
+                            Log.v("PDM","REMOVENDO CONTATO: " + pos);
+                            ArrayList<Contato> new_contatos = removerContato(contatos, pos);
+                            usr.setContatos(new_contatos);
+                            Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
+                            intent.putExtra("usuario", usr);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                    return v;
+                }
+
+
+            };
 
             lv.setAdapter(simpleAdapter);
 
@@ -174,7 +228,9 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             final String[] nomesSP;
             nomesSP = new String[contatos.size()];
             Contato c;
+
             for (int j = 0; j < contatos.size(); j++) {
+
                 nomesSP[j] = contatos.get(j).getNome();
             }
 
@@ -189,6 +245,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.v("PDM", "\n\n\n\n\n\n\n"+view.getTextAlignment()+"\n\n\n\n\n\n\\n");
 
                     if (checarPermissaoPhone_SMD(contatos.get(i).getNumero())) {
 
@@ -198,7 +255,6 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                         startActivity(itLigar);
                     }
 
-
                 }
             });
         }//fim do IF do tamanho de contatos
@@ -206,7 +262,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
     protected boolean checarPermissaoPhone_SMD(String numero){
 
-        numeroCall=numero;
+        String numeroCall=numero;
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
       == PackageManager.PERMISSION_GRANTED){
 
@@ -216,7 +272,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
       } else {
 
-            if ( shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)){
+            if ( !shouldShowRequestPermissionRationale(Manifest.permission.CALL_PHONE)){
 
                 Log.v ("SMD","Primeira Vez");
 
@@ -230,14 +286,10 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 mensagemPermissao.show(getSupportFragmentManager(), "primeiravez2");
 
             }else{
-                String mensagem = "Nossa aplicação precisa acessar o telefone para discagem automática. Uma janela de permissão será solicitada";
-                String titulo = "Permissão de acesso a chamadas II";
-                int codigo =1;
-
-                UIEducacionalPermissao mensagemPermissao = new UIEducacionalPermissao(mensagem,titulo, codigo);
-                mensagemPermissao.onAttach ((Context)this);
-                mensagemPermissao.show(getSupportFragmentManager(), "segundavez2");
-                Log.v ("SMD","Outra Vez");
+                // Discar número no celular, uma vez que permissão de ligação nao foi concedida
+                Uri uri = Uri.parse(numeroCall);
+                Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
+                startActivity(itLigar);
 
             }
       }
@@ -251,20 +303,22 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
         switch (requestCode) {
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                   Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
+                   //Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
                    Uri uri = Uri.parse(numeroCall);
                    //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
                    Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
                    startActivity(itLigar);
 
                }else{
-                   Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
+                   //Toast.makeText(this, "SEU FELA!", Toast.LENGTH_LONG).show();
 
-                   String mensagem= "Seu aplicativo pode ligar diretamente, mas sem permissão não funciona. Se você marcou não perguntar mais, você deve ir na tela de configurações para mudar a instalação ou reinstalar o aplicativo  ";
+                   String mensagem= "Seu aplicativo pode ligar diretamente, mas sem permissão não funciona. Caso queira ativar essa permissão, você deve ir na tela de configurações para mudar a instalação ou reinstalar o aplicativo  ";
                    String titulo= "Porque precisamos telefonar?";
                    UIEducacionalPermissao mensagemPermisso = new UIEducacionalPermissao(mensagem,titulo,2);
                    mensagemPermisso.onAttach((Context)this);
                    mensagemPermisso.show(getSupportFragmentManager(), "segundavez");
+
+
                }
                 break;
         }
@@ -299,7 +353,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             user=atualizarUser();
             setTitle("Contatos de Emergência de "+user.getNome());
             atualizarListaDeContatos(user);
-           // preencherListViewImagens(user);
+            //preencherListViewImagens(user);
             preencherListView(user); //Montagem do ListView
         }
 

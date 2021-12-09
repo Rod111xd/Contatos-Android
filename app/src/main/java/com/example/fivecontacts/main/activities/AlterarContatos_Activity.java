@@ -7,10 +7,12 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -21,15 +23,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.fivecontacts.R;
 import com.example.fivecontacts.main.model.Contato;
 import com.example.fivecontacts.main.model.User;
+import com.example.fivecontacts.main.utils.UIEducacionalPermissao;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class AlterarContatos_Activity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -58,27 +64,27 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                 setTitle("Alterar Contatos de Emergência");
             }
         }
-        lv = findViewById(R.id.listContatosDoCell);
-        //Evento de limpar Componente
-        edtNome.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (primeiraVezUser){
-                    primeiraVezUser=false;
-                    edtNome.setText("");
-                }
+        lv = findViewById(R.id.listView1);
 
-                return false;
-            }
-        });
+        // Buscar assim que iniciar a página
+        Buscar();
     }
 
-    public void salvarContato (Contato w){
+    public boolean salvarContato (Contato w){
+        ArrayList<Contato> conts = user.getContatos();
+        for(Iterator<Contato> i = conts.iterator(); i.hasNext(); ) {
+            Contato c = i.next();
+            if (c.getNome().equals(w.getNome())) {
+                Toast.makeText(this, "Nome de contato já existe", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
         SharedPreferences salvaContatos =
                 getSharedPreferences("contatos",Activity.MODE_PRIVATE);
 
         int num = salvaContatos.getInt("numContatos", 0); //checando quantos contatos já tem
         SharedPreferences.Editor editor = salvaContatos.edit();
+        // Salvando contato e adicionando ao objeto User
         try {
             ByteArrayOutputStream dt = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(dt);
@@ -93,6 +99,8 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         }
         editor.commit();
         user.getContatos().add(w);
+
+        return true;
     }
 
 
@@ -108,8 +116,8 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         Log.v("PDM","Matei a Activity Lista de Contatos");
     }
 
-
-    public void onClickBuscar(View v){
+    public void Buscar() {
+        // Operação de busca de contatos do celular e exibição na tela
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
             Log.v("PDM", "Pedir permissão");
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 3333);
@@ -157,16 +165,23 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                         Contato c= new Contato();
                         c.setNome(nomesContatos[i]);
                         c.setNumero("tel:+"+telefonesContatos[i]);
-                        salvarContato(c);
-                        Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
-                        intent.putExtra("usuario", user);
-                        startActivity(intent);
-                        finish();
+                        boolean res = salvarContato(c);
+                        if(res) {
+                            Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
+                            intent.putExtra("usuario", user);
+                            startActivity(intent);
+                            finish();
+                        }
 
                     }
                 });
             }
         }
+    }
+
+
+    public void onClickBuscar(View v){
+        Buscar();
     }
 
     @Override
@@ -188,5 +203,18 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
 
         }
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        switch (requestCode) {
+            case 3333:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    // Pesquisar assim que permissão for concedida
+                    Buscar();
+                }
+                break;
+        }
     }
 }

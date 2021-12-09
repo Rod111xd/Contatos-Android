@@ -36,24 +36,14 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
     Button btLogar;
     Button btNovo;
     TextView mTextView;
+    TextView esqueceuSenha;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checagem_login);
 
-      /*  User userPDM= new User();
-        userPDM.setNome("Einstein");
-      // userPDM.setTema_escuro(true);
-        Contato c= new Contato();
-        c.setNome("Newton");
-        c.setNumero("tel:+888888");
-        userPDM.getContatos().add(c);
+        esqueceuSenha = findViewById(R.id.tvEsqueceuSenha);
 
-        Intent intentPDM= new Intent(this, ListaDeContatos_Activity.class);
-        intentPDM.putExtra("usuarioPDM",userPDM);
-        startActivity(intentPDM);
-
-*/
 
         //Existe um usuário padrão logado?
         if(montarObjetoUserSemLogar()){
@@ -79,31 +69,6 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
             mTextView = findViewById(R.id.tvEsqueceuSenha);
             mTextView.setPaintFlags(mTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-            //Evento de limpar Componente
-            edUser.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if (primeiraVezUser) {
-                        edUser.setText("");
-                        primeiraVezUser = false;
-                    }
-                    return false;
-                }
-            });
-
-            //Evento de limpar Componente
-            edPass.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if (primeiraVezSenha) {
-                        primeiraVezSenha = false;
-                        edPass.setText("");
-                        edPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
-                        );
-                    }
-                    return false;
-                }
-            });
 
             btLogar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -158,10 +123,18 @@ public class ChecagemLogin_Activity extends AppCompatActivity {
                 }
             });
 
+            esqueceuSenha.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(ChecagemLogin_Activity.this, "Crie uma nova conta", Toast.LENGTH_LONG).show();
+                }
+            });
+
         }
 
 
    }
+
 
     private User montarObjetoUser() {
         User user = null;
