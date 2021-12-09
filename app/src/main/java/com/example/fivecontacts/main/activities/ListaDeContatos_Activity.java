@@ -262,7 +262,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
     protected boolean checarPermissaoPhone_SMD(String numero){
 
-        String numeroCall=numero;
+        numeroCall=numero;
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
       == PackageManager.PERMISSION_GRANTED){
 
@@ -304,6 +304,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    //Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
+                   Log.v("PDM", "Numero: "+numeroCall);
                    Uri uri = Uri.parse(numeroCall);
                    //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
                    Intent itLigar = new Intent(Intent.ACTION_CALL, uri);
