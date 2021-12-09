@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/activity_alterar_contatos.xml" value="0.25" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/activity_checagem_login.xml" value="0.25" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/activity_lista_de_contatos.xml" value="0.22" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/activity_novo_usuario.xml" value="0.25" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/activity_perfil_usuario.xml" value="0.25" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/list_view_layout.xml" value="0.12590579710144928" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/layout/list_view_layout_imagem.xml" value="0.25" />
+        <entry key="..\:/Users/Rodrigo/AndroidStudioProjects/FiveContactsvLV/app/src/main/res/menu/activity_main_bottom_actions.xml" value="0.2" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".main.activities.NovoUsuario_Activity">
+
+    <TextView
+        android:id="@+id/tvMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="@font/aldrich"
+        android:minHeight="48dp"
+        android:text="@string/novo_usu_rio"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textColorLink="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView3" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="false"
+        android:importantForAccessibility="no"
+        android:scaleType="fitXY"
+        android:translationZ="-4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/banner" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="#FFFFFF"
+        android:paddingBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3">
+
+        <TextView
+            android:id="@+id/txtUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/aldrich"
+            android:labelFor="@id/edT_Login2"
+            android:text="@string/usu_rio"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/edT_Login2"
+            app:layout_constraintTop_toBottomOf="@+id/edtNome" />
+
+        <TextView
+            android:id="@+id/txtSenha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/aldrich"
+            android:labelFor="@id/edt_Pass2"
+            android:text="@string/senha"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/edt_Pass2"
+            app:layout_constraintTop_toBottomOf="@+id/edT_Login2" />
+
+        <TextView
+            android:id="@+id/txtEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/aldrich"
+            android:labelFor="@id/edEmail"
+            android:text="@string/e_mail"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/edEmail"
+            app:layout_constraintTop_toBottomOf="@+id/edt_Pass2" />
+
+        <EditText
+            android:id="@+id/edT_Login2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="270dp"
+            android:ems="10"
+            android:hint="@string/usuario_min"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimary"
+            android:textColorLink="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.557"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtUsuario"
+            tools:ignore="TextContrastCheck" />
+
+        <EditText
+            android:id="@+id/edt_Pass2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="270dp"
+            android:ems="10"
+            android:hint="@string/senha_min"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimary"
+            android:textColorLink="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.557"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtSenha"
+            tools:ignore="TextContrastCheck" />
+
+        <Button
+            android:id="@+id/btCriar"
+            android:layout_width="271dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="40dp"
+            android:background="@color/colorPrimary"
+            android:fontFamily="@font/aldrich"
+            android:text="@string/criar"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/swLogado" />
+
+        <TextView
+            android:id="@+id/txtNome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/aldrich"
+            android:importantForAccessibility="no"
+            android:labelFor="@id/edtNome"
+            android:text="@string/nome"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/edtNome"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/edtNome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="270dp"
+            android:ems="10"
+            android:hint="@string/nome_min"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimary"
+            android:textColorLink="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.557"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtNome"
+            tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck,SpeakableTextPresentCheck" />
+
+        <Switch
+            android:id="@+id/swLogado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/aldrich"
+            android:minHeight="48dp"
+            android:showText="false"
+            android:text="@string/manter_logado"
+            android:textColor="@color/colorPrimary"
+            android:textOff="@string/n_o"
+            android:textOn="@string/sim"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/edEmail"
+            app:layout_constraintTop_toBottomOf="@+id/edEmail" />
+
+        <EditText
+            android:id="@+id/edEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="270dp"
+            android:ems="10"
+            android:hint="@string/email_min"
+            android:importantForAutofill="no"
+            android:inputType="textEmailAddress"
+            android:textAlignment="viewStart"
+            android:textColor="@color/colorPrimary"
+            android:textColorLink="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.557"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtEmail"
+            tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
