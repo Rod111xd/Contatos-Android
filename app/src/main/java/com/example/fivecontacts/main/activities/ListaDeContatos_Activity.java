@@ -9,11 +9,15 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
@@ -21,11 +25,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +41,7 @@ import com.example.fivecontacts.main.model.Contato;
 import com.example.fivecontacts.main.model.User;
 import com.example.fivecontacts.main.utils.UIEducacionalPermissao;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.zxing.WriterException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,6 +54,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 public class ListaDeContatos_Activity extends AppCompatActivity implements UIEducacionalPermissao.NoticeDialogListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -161,11 +171,12 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                 Map<String,Object> listItemMap = new HashMap<String,Object>();
                 listItemMap.put("contato", contatosNomes[i]);
                 listItemMap.put("abrevs",contatosAbrevs[i]);
+                listItemMap.put("imageId2", R.drawable.qr);
                 listItemMap.put("imageId", R.drawable.trash);
                 itemDataList.add(listItemMap);
             }
             SimpleAdapter simpleAdapter = new SimpleAdapter(this,itemDataList,R.layout.list_view_layout_imagem,
-                    new String[]{"contato","abrevs","imageId"},new int[]{R.id.userTitle,R.id.userAbrev, R.id.userImage})
+                    new String[]{"contato","abrevs","imageId2","imageId"},new int[]{R.id.userTitle,R.id.userAbrev, R.id.userImage2, R.id.userImage})
             {
                 @Override
                 public View getView (int position, View convertView, ViewGroup parent)
@@ -187,6 +198,52 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
                             intent.putExtra("usuario", usr);
                             startActivity(intent);
                             finish();
+                        }
+                    });
+
+                    final ImageView b2=(ImageView)v.findViewById(R.id.userImage2);
+                    b2.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View arg0) {
+                            // Listener para exibir Qr Code
+                            Log.v("PDM","EXIBINDO QR CODE: " + pos);
+                            String cNome = contatos.get(pos).getNome();
+                            String cNumber = contatos.get(pos).getNumero().substring(5);
+                            Log.v("PDM","Nome: " + cNome);
+                            Log.v("PDM","Numero: " + cNumber);
+                            String qrString = "BEGIN:VCARD\n" +
+                                    "VERSION:3.0\n" +
+                                    "N:;" + cNome + "\n" +
+                                    "TEL;TYPE=CELL:" + cNumber + "\n" +
+                                    "END:VCARD";
+                            QRGEncoder qrgEncoder = new QRGEncoder(qrString, null, QRGContents.Type.TEXT, 700);
+
+                            Dialog builder = new Dialog(ListaDeContatos_Activity.this);
+                            builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            builder.getWindow().setBackgroundDrawable(
+                                    new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialogInterface) {
+                                    //nothing;
+                                }
+                            });
+
+                            ImageView imageView = new ImageView(ListaDeContatos_Activity.this);
+
+                            try {
+                                // Getting QR-Code as Bitmap
+                                Bitmap bitmap = qrgEncoder.encodeAsBitmap();
+                                // Setting Bitmap to ImageView
+                                imageView.setImageBitmap(bitmap);
+                            } catch (WriterException e) {
+                                Log.v("PDM", e.toString());
+                            }
+                            builder.addContentView(imageView, new RelativeLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT));
+                            builder.show();
                         }
                     });
                     return v;
@@ -262,7 +319,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
 
     protected boolean checarPermissaoPhone_SMD(String numero){
 
-        String numeroCall=numero;
+        numeroCall=numero;
       if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
       == PackageManager.PERMISSION_GRANTED){
 
@@ -304,6 +361,7 @@ public class ListaDeContatos_Activity extends AppCompatActivity implements UIEdu
             case 2222:
                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
                    //Toast.makeText(this, "VALEU", Toast.LENGTH_LONG).show();
+                   Log.v("PDM", "Numero: "+numeroCall);
                    Uri uri = Uri.parse(numeroCall);
                    //   Intent itLigar = new Intent(Intent.ACTION_DIAL, uri);
                    Intent itLigar = new Intent(Intent.ACTION_CALL, uri);

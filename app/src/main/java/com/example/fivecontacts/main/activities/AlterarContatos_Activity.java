@@ -1,7 +1,10 @@
 package com.example.fivecontacts.main.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageProxy;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -12,9 +15,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -22,20 +30,31 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.fivecontacts.R;
 import com.example.fivecontacts.main.model.Contato;
 import com.example.fivecontacts.main.model.User;
+import com.example.fivecontacts.main.utils.Rotation;
 import com.example.fivecontacts.main.utils.UIEducacionalPermissao;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
+import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.common.InputImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class AlterarContatos_Activity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -44,6 +63,7 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
     ListView lv;
     BottomNavigationView bnv;
     User user;
+    ImageButton btnFoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +73,8 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         bnv = findViewById(R.id.bnv);
         bnv.setOnNavigationItemSelectedListener(this);
         bnv.setSelectedItemId(R.id.anvMudar);
+
+        btnFoto = (ImageButton) findViewById(R.id.barcodeButton);
 
         //Dados da Intent Anterior
         Intent quemChamou=this.getIntent();
@@ -114,6 +136,22 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
     protected void onDestroy() {
         super.onDestroy();
         Log.v("PDM","Matei a Activity Lista de Contatos");
+    }
+
+    public void tirarFoto() {
+        // Captura de foto
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            Log.v("PDM", "Pedir permissão");
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 4444);
+            return;
+        }
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, 1110);
+        }
+
+
     }
 
     public void Buscar() {
@@ -184,6 +222,18 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
         Buscar();
     }
 
+    public void onClickFoto(View v){
+        tirarFoto();
+    }
+
+    public void notifyBarcode(boolean b) {
+        if(b) {
+            Toast.makeText(this, "Contato adicionado", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "QR Code inválido", Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Checagem de o Item selecionado é o do perfil
@@ -215,6 +265,92 @@ public class AlterarContatos_Activity extends AppCompatActivity implements Botto
                     Buscar();
                 }
                 break;
+            case 4444:
+                if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    // Tirar foto assim que permissão for concedida
+                    tirarFoto();
+                }
+                break;
+        }
+    }
+
+    public void analyze(Bitmap imageMedia) {
+        try {
+            InputImage image =
+                    InputImage.fromBitmap(imageMedia, Rotation.getRotationCompensation("0", this, true));
+            scanBarcodes(image);
+        }catch(Exception e) {
+            Log.v("PDM", "Erro no analyze");
+        }
+    }
+
+    private void scanBarcodes(InputImage image) {
+
+        BarcodeScannerOptions options =
+                new BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(
+                                Barcode.FORMAT_QR_CODE,
+                                Barcode.FORMAT_AZTEC)
+                        .build();
+
+        BarcodeScanner scanner = BarcodeScanning.getClient();
+
+        Task<List<Barcode>> result = scanner.process(image)
+                .addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
+                    @Override
+                    public void onSuccess(List<Barcode> barcodes) {
+                        Log.v("PDM","Sucesso Barcode");
+
+                        for (Barcode barcode: barcodes) {
+                            Rect bounds = barcode.getBoundingBox();
+                            Point[] corners = barcode.getCornerPoints();
+
+                            String rawValue = barcode.getRawValue();
+
+                            int valueType = barcode.getValueType();
+                            // See API reference for complete list of supported types
+                            switch (valueType) {
+                                case Barcode.TYPE_CONTACT_INFO:
+                                    Log.v("PDM","Tipo ContactInfo");
+                                    Barcode.ContactInfo cont = barcode.getContactInfo();
+                                    String cNome = cont.getName().getFirst();
+                                    String cNumber = cont.getPhones().get(0).getNumber();
+                                    Contato c= new Contato();
+                                    c.setNome(cNome);
+                                    c.setNumero("tel:+"+cNumber);
+                                    boolean res = salvarContato(c);
+                                    if(res) {
+                                        notifyBarcode(true);
+                                        Intent intent = new Intent(getApplicationContext(), ListaDeContatos_Activity.class);
+                                        intent.putExtra("usuario", user);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                    break;
+                                default:
+                                    notifyBarcode(false);
+                                    break;
+                            }
+                        }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("PDM","Falha Barcode");
+
+                    }
+                });
+
+    }
+
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1110) {
+            Log.v("PDM", "resultado: "+resultCode);
+            Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+            analyze(captureImage);
         }
     }
 }
